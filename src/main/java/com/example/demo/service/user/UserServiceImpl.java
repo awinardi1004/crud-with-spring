@@ -29,6 +29,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> findByEmail(String email) {
+        //TODO: implement this
+        return Optional.empty();
+    }
+
+    @Override
     public User create(UserRequest request) {
         Optional<Job> jobData = jonService.getJobById(request.getJobId());
 
