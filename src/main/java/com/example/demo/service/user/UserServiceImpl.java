@@ -3,10 +3,10 @@ package com.example.demo.service.user;
 import com.example.demo.model.Job;
 import com.example.demo.model.User;
 import com.example.demo.model.UserRequest;
-import com.example.demo.repository.JobRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.service.Job.JobService;
+import com.example.demo.service.job.JobService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,53 +16,34 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final JobService jonService;
+    private final JobService jobService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers()
+    {
         return userRepository.findAll();
     }
 
     @Override
-    public Optional<User> getByID(Long id) {
+    public Optional<User> getUserByID(Long id) {
         return userRepository.findById(id);
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        //TODO: implement this
-        return Optional.empty();
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow();
     }
 
     @Override
-    public User create(UserRequest request) {
-        Optional<Job> jobData = jonService.getJobById(request.getJobId());
-
-        if (jobData.isEmpty()) {
-            return null;
-        }
-
-        Job job = jobData.get();
-
-        User userData = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .job(job)
-                .build();
-
-        return userRepository.save(userData);
-    }
-
-    @Override
-    public User update(UserRequest request, Long id) {
-        Optional<User> userData = getByID(id);
+    public User updateUser(UserRequest request, Long id) {
+        Optional<User> userData = getUserByID(id);
 
         if (userData.isEmpty()) {
             return null;
         }
 
-        Optional<Job> jobData = jonService.getJobById(request.getJobId());
+        Optional<Job> jobData = jobService.getJobById(request.getJobId());
 
         if (jobData.isEmpty()) {
             return null;
@@ -73,15 +54,15 @@ public class UserServiceImpl implements UserService {
 
         updatedUser.setName(request.getName());
         updatedUser.setEmail(request.getEmail());
-        updatedUser.setPassword(request.getPassword());
+        updatedUser.setPassword(passwordEncoder.encode(request.getPassword()));
         updatedUser.setJob(job);
 
         return userRepository.save(updatedUser);
     }
 
     @Override
-    public boolean delete(Long id) {
-        Optional<User> userData = getByID(id);
+    public boolean deleteUser(Long id) {
+        Optional<User> userData = getUserByID(id);
 
         if (userData.isEmpty()) {
             return false;

@@ -3,7 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.Job;
 import com.example.demo.model.JobRequest;
 import com.example.demo.model.Response;
-import com.example.demo.service.Job.JobService;
+import com.example.demo.service.job.JobService;
 import com.example.demo.util.Util;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
